@@ -3,6 +3,7 @@ package com.devsuperior.dslearnbds.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -32,6 +33,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	private final JwtAccessTokenConverter tokenConverter;
 	private final JwtTokenStore tokenStore;
 	private final AuthenticationManager authenticationManager;
+	private final UserDetailsService userDetailsService;
 	
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -44,14 +46,16 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		.withClient(clientId)
 		.secret(encoder.encode(clientSecret))
 		.scopes("read", "wright")
-		.authorizedGrantTypes("password")
-		.accessTokenValiditySeconds(duration);
+		.authorizedGrantTypes("password", "refresh_token")
+		.accessTokenValiditySeconds(duration)
+		.refreshTokenValiditySeconds(duration);
 	}
 	
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 		endpoints.authenticationManager(authenticationManager)
 		.tokenStore(tokenStore)
-		.accessTokenConverter(tokenConverter);
+		.accessTokenConverter(tokenConverter)
+		.userDetailsService(userDetailsService);
 	}
 }
