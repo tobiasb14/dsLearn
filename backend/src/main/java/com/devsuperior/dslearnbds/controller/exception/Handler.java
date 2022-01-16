@@ -23,6 +23,16 @@ public class Handler {
 		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationErrorBody(e));
 	}
 	
+	@ExceptionHandler(ForbiddenException.class)
+	public ResponseEntity<OauthCustomError> forbidden(ForbiddenException e) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new OauthCustomError("Forbidden", e.getMessage()));
+	}
+	
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<OauthCustomError> unauthourized(UnauthorizedException e) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new OauthCustomError("unauthourized", e.getMessage()));
+	}
+	
 	private List<ValidationErrorResponse> validationErrorBody(MethodArgumentNotValidException e) {
 		return e.getBindingResult().getFieldErrors()
 				.stream().map(error -> new ValidationErrorResponse(error.getField(), error.getDefaultMessage()))
